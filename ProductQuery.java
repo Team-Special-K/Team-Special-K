@@ -9,11 +9,11 @@ public class ProductQuery extends QueryBuilder{
 		TABLENAME = "Products";
 		TOTALCOLUMNS = 5;
 		
-		keys.put(KEYHEADER, "Sample");
-		keys.put("quantity", 1);
-		keys.put("wholesale_cost", 5.0);
-		keys.put("sale_price", 3.0);
-		keys.put("supplier_id", "a1");
+		keys.put(KEYHEADER, null);
+		keys.put("quantity", null);
+		keys.put("wholesale_cost", null);
+		keys.put("sale_price", null);
+		keys.put("supplier_id", null);
 		
 	}
 }
