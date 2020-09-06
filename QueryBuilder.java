@@ -149,6 +149,6 @@ public abstract class QueryBuilder {
 	 * Assigns null values to all of the keys in this key hashmap
 	 */
 	public void clearKeys() {
-		keys.forEach((k, v) -> {v = null;});
+		keys.forEach((k, v) -> v = null);
 	}
 }
