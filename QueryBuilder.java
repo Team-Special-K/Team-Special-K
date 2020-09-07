@@ -56,14 +56,19 @@ public abstract class QueryBuilder {
 	 * 
 	 * @returns the SQL query
 	 */
-	public String updateRow() {
+	public String updateRow() { 
 
-		assert(keys.size() == TOTALCOLUMNS);
+		assert(keys.get(KEYHEADER) != null);
+		
 		String updateVals = "";
 		
 		for (Map.Entry<String, Object> set: keys.entrySet()) {
-			updateVals += set.getKey() + " = " + (String)set.getValue() + ",";
+			Object value = set.getValue();
+			if(value != null) {
+			updateVals += set.getKey() + " = " + (String)value + ",";
+			}
 		}
+		
 		updateVals = updateVals.substring(0, updateVals.length() - 1);
 		
 		String query = "UPDATE " + TABLENAME + " SET " + updateVals + " WHERE " + KEYHEADER + " = " + keyWanted + ";";
@@ -138,5 +143,12 @@ public abstract class QueryBuilder {
 		updateVals.append(");");
 		
 		return updateVals.toString();
+	}
+	
+	/*
+	 * Assigns null values to all of the keys in this key hashmap
+	 */
+	public void clearKeys() {
+		keys.forEach((k, v) -> v = null);
 	}
 }
