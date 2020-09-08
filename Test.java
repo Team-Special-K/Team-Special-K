@@ -17,9 +17,9 @@ public class Test {
    
       Db test = new Db();
    
-      ProductQuery PQTest = new ProductQuery("TestSku");
+      ProductQuery pqTest = new ProductQuery("TestSku");
    
-      ResultSet testResult = dataBaseTest(test);
+      ResultSet testResult = dataBaseTest(test, pqTest);
       
       // call method to add all lines from doc into database
       
@@ -40,13 +40,13 @@ public class Test {
    *  if it doesn't it exist, the method creates it
    */
      
-   public static ResultSet dataBaseTest(Db test) {
+   public static ResultSet dataBaseTest(Db test, ProductQuery pqTest) {
    
       
-      ResultSet result = test.sendSqlStatement(PQTest.dbExist());
+      ResultSet result = test.sendSqlStatement(pqTest.dbExist());
       
       
-      if(!result.next()){test.sendSqlStatement(PQTest.createDb());}
+      if(!result.next()){test.sendSqlStatement(pqTest.createDb());}
       
       return result;
       
@@ -107,7 +107,7 @@ public class Test {
    *  @param productID takes in a string to check the database for
    */
    
-   public static void checkEntry(String productID) {
+   public static void checkEntry(String productID, Db test) {
       
       ProductQuery item = new ProductQuery(productID);
       
