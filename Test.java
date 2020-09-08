@@ -27,7 +27,7 @@ public class Test {
       
       
       // call method to check a random line in the database
-      checkEntry("OHD8WMCL4QV2");
+      checkEntry("OHD8WMCL4QV2", test);
    
    }
    
