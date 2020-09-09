@@ -2,6 +2,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.io.*;
 
@@ -34,7 +35,15 @@ public class Test {
       
       // call method to check a random line in the database
       checkEntry("OHD8WMCL4QV2", database);
-      insertEntry("1", "2", "3", "4", "5", database);
+
+      Integer randomQuantity = (int) (9999.0 * Math.random());
+      Double randomWholesale = (Double) ((99999.0 * Math.random()) / (799.0 * Math.random()));
+      Double randomSalePrice = (Double) ((99999.0 * Math.random()) / (399.0 * Math.random()));
+
+      String randomPID = generateString(12);
+      String randomSupplierID = generateString(8);
+
+      insertEntry(Integer.toString(randomQuantity), randomPID, Double.toString(randomWholesale), Double.toString(randomSalePrice), randomSupplierID, database);
    }
    
    
@@ -133,16 +142,16 @@ public class Test {
       }
    }
 
+   public static String generateString(int length) {
+      String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
+      StringBuilder sb = new StringBuilder();
+      Random random = new Random();
 
+      for(int i = 0; i < length; i++) {
+         sb.append(chars.charAt(random.nextInt(chars.length())));
+      }
 
-
-
-
-
-
-
-
-
-
+      return sb.toString();
+   }
 }
