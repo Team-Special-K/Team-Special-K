@@ -130,6 +130,7 @@ public abstract class QueryBuilder {
 
 		StringBuilder updateVals = new StringBuilder();
 		updateVals.append("CREATE TABLE " + TABLENAME + " (");
+		updateVals.append("id int AUTO_INCREMENT,");
 
 		keys.forEach((k,v)->{
 			updateVals.append(k);
@@ -140,7 +141,8 @@ public abstract class QueryBuilder {
 			else if(v == null){updateVals.append(" varchar(255),");}
 		});
 		
-		updateVals.deleteCharAt(updateVals.length() - 1);
+		//updateVals.deleteCharAt(updateVals.length() - 1);
+		updateVals.append("PRIMARY KEY (id)");
 		updateVals.append(");");
 		
 		return updateVals.toString();

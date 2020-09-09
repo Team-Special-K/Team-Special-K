@@ -34,6 +34,7 @@ public class Test {
       
       // call method to check a random line in the database
       checkEntry("OHD8WMCL4QV2", database);
+      insertEntry("1", "2", "3", "4", "5", database);
    }
    
    
@@ -106,7 +107,7 @@ public class Test {
    public static void checkEntry(String productID, Db db) throws SQLException {
       
       ProductQuery item = new ProductQuery(productID);
-      
+      System.out.println(item.getRow());
       ResultSet a = db.sendSqlStatement(item.getRow());
 
       ResultSetMetaData metadata = a.getMetaData();
@@ -121,6 +122,14 @@ public class Test {
          }
          System.out.println(row); //This is the row as a string -> "field1, field2, field3, field4"
          System.out.println(array); //This is the row as an array -> [field1, field2, field3, field4]
+      }
+   }
+
+   public static void insertEntry(String quanitiy, String productID, String wholesale, String salePrice, String supplierID, Db db) throws SQLException {
+      ResultSet result = db.sendSqlStatement("INSERT INTO Products (`quantity`, `product_id`, `wholesale_cost`, `sale_price`, `supplier_id`) VALUES ('"+quanitiy+"', '"+productID+"', '"+wholesale+"', '"+salePrice+"', '"+supplierID+"')");
+      
+      if(result == null) {
+         System.out.println("Entry was inserted.");
       }
    }
 
