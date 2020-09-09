@@ -1,5 +1,7 @@
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 
@@ -106,8 +108,20 @@ public class Test {
       ProductQuery item = new ProductQuery(productID);
       
       ResultSet a = db.sendSqlStatement(item.getRow());
+
+      ResultSetMetaData metadata = a.getMetaData();
+      int columnCount = metadata.getColumnCount();
             
-      while(a.next()){System.out.println(a.getRow());}
+      while(a.next()) {
+         String row = "";
+         List<String> array = new ArrayList<>();
+         for(int i = 1; i <= columnCount; i++) {
+            row += a.getString(i) + ", ";
+            array.add(a.getString(i));
+         }
+         System.out.println(row); //This is the row as a string -> "field1, field2, field3, field4"
+         System.out.println(array); //This is the row as an array -> [field1, field2, field3, field4]
+      }
    }
 
 
