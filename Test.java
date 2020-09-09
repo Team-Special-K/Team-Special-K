@@ -13,25 +13,29 @@ public class Test {
    *  In the Main method we will be calling the various classes and methods we have already built 
    *  to be sure that they work properly
    */
-   public static void main(String[] args) throws SQLException, FileNotFoundException {
+   public static void main(String[] args) throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
 	  
       Db database = new Db();
       ProductQuery query = new ProductQuery("TestSku");
       
-      database.sendSqlStatement("USE "+ QueryBuilder.DBNAME + ";");
-     
-      //create db if it doesnt exist 
-      ResultSet result = database.sendSqlStatement(query.dbExist());//sears.sendSqlStatement(q.dbExist());
-      if(!result.next()){database.sendSqlStatement(query.createDb());}
+      ResultSet testing = database.sendSqlStatement("USE "+ QueryBuilder.DBNAME + ";");
+
+      if(testing == null) {
+         //create db if it doesnt exist 
+         ResultSet result = database.sendSqlStatement(query.dbExist());//sears.sendSqlStatement(q.dbExist());
+         if(!result.next()){database.sendSqlStatement(query.createDb());}
+         database.sendSqlStatement("USE "+ QueryBuilder.DBNAME + ";");
+      }
       
       
-      result = database.sendSqlStatement(query.tableExist());//sears.sendSqlStatement(q.dbExist());
-      if(!result.next()){database.sendSqlStatement(query.createTable());}
+      ResultSet tableresult = database.sendSqlStatement(query.tableExist());//sears.sendSqlStatement(q.dbExist());
+      if(!tableresult.next()){database.sendSqlStatement(query.createTable());}
 	
       ResultSet testResult = databaseTest(query, database);
       
       // call method to add all lines from doc into database
-      //addEntries("inventory_team5.csv", database);
+      boolean recordsExist = check_db_length(database);
+      if(!recordsExist) addEntries("inventory_team5.csv", database);
       
       // call method to check a random line in the database
       checkEntry("OHD8WMCL4QV2", database);
@@ -69,7 +73,8 @@ public class Test {
    *  @param fileName is the name of the document you are using to add information
    */
 
-   public static void addEntries(String fileName, Db test) throws FileNotFoundException {
+   public static void addEntries(String fileName, Db test) throws FileNotFoundException, SQLSyntaxErrorException,
+         SQLException {
       
       // read in excel file
       
@@ -153,5 +158,16 @@ public class Test {
       }
 
       return sb.toString();
+   }
+
+   public static boolean check_db_length(Db db) throws SQLException {
+      ResultSet result = db.sendSqlStatement("SELECT count(*) FROM Products");
+      result.next();
+
+      if(result.getInt("count(*)") > 0) {
+         return true;
+      } else {
+         return false;
+      }
    }
 }
