@@ -1,7 +1,6 @@
-package master;
 
 public class ProductQuery extends QueryBuilder{
-	
+
 	public ProductQuery(String keyWanted){
 		super(keyWanted);
 		
@@ -17,7 +16,7 @@ public class ProductQuery extends QueryBuilder{
 		
 	}
 	public ProductQuery(String keyWanted, int quantity, 
-			    double wholeCost, double salePrice, String Supplier) {
+			    double wholeCost, double salePrice, String supplier) {
 		
 		super(keyWanted);
       
@@ -27,6 +26,7 @@ public class ProductQuery extends QueryBuilder{
       		TOTALCOLUMNS = 5;
       
       		// puts inserted quantities from input into the product query constructor
+      	keys.put(KEYHEADER, keyWanted);
 		keys.put("quantity", quantity);
 		keys.put("wholesale_cost", wholeCost);
 		keys.put("sale_price", salePrice);

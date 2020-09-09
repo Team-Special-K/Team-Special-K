@@ -1,6 +1,4 @@
 
-
-
 import java.sql.*;
 import java.util.Scanner;
 import java.io.*;
@@ -12,45 +10,42 @@ public class Test {
    *  In the Main method we will be calling the various classes and methods we have already built 
    *  to be sure that they work properly
    */
-   
-   public static void main(String[] args) throws SQLException {
-   
-      Db test = new Db();
-   
-      ProductQuery pqTest = new ProductQuery("TestSku");
-   
-      ResultSet testResult = dataBaseTest(test, pqTest);
+   public static void main(String[] args) throws SQLException, FileNotFoundException {
+	  
+      Db database = new Db();
+      ProductQuery query = new ProductQuery("TestSku");
+      
+      database.sendSqlStatement("USE "+ QueryBuilder.DBNAME + ";");
+     
+      //create db if it doesnt exist 
+      ResultSet result = database.sendSqlStatement(query.dbExist());//sears.sendSqlStatement(q.dbExist());
+      if(!result.next()){database.sendSqlStatement(query.createDb());}
+      
+      
+      result = database.sendSqlStatement(query.tableExist());//sears.sendSqlStatement(q.dbExist());
+      if(!result.next()){database.sendSqlStatement(query.createTable());}
+	
+      ResultSet testResult = databaseTest(query, database);
       
       // call method to add all lines from doc into database
-      
-      addEntries("inventory_team5.csv", test);
-      
+      //addEntries("inventory_team5.csv", database);
       
       // call method to check a random line in the database
-      checkEntry("OHD8WMCL4QV2", test);
-   
+      checkEntry("OHD8WMCL4QV2", database);
    }
-   
-   
-   
    
    
    /*
    *  This method takes in a database and checks if it exists
    *  if it doesn't it exist, the method creates it
-   */
-     
-   public static ResultSet dataBaseTest(Db test, ProductQuery pqTest) {
-   
+   */  
+   public static ResultSet databaseTest(ProductQuery query, Db db) throws SQLException {
       
-      ResultSet result = test.sendSqlStatement(pqTest.dbExist());
-      
-      
-      if(!result.next()){test.sendSqlStatement(pqTest.createDb());}
+      ResultSet result = db.sendSqlStatement(query.dbExist());
+           
+      if(!result.next()){db.sendSqlStatement(query.createDb());}
       
       return result;
-      
-   
    }
 
 
@@ -62,7 +57,7 @@ public class Test {
    *  @param fileName is the name of the document you are using to add information
    */
 
-   public static void addEntries(String fileName, Db test) {
+   public static void addEntries(String fileName, Db test) throws FileNotFoundException {
       
       // read in excel file
       
@@ -73,11 +68,11 @@ public class Test {
       ProductQuery pq;
       
       // gets rid of header row from table
-      String useless = inputFile.nextLine();
+      inputFile.nextLine();
       
       // as long as the file isnt empty keep looping through the input file
       while(inputFile.hasNext()) {
-      
+    	 
          String line = inputFile.nextLine();
          
          // split the string at each delimiter and return an array of the lines entries
@@ -85,18 +80,17 @@ public class Test {
          String[] data = line.split("[,]", 0);
          
          String productID = data[0];
-         String quantity = data[1];
-         String wholesale = data[2];
-         String salePrice = data[3];
+         int quantity = Integer.parseInt(data[1]);
+         float wholesale = Float.parseFloat(data[2]);
+         float salePrice = Float.parseFloat(data[3]);
          String supplier = data[4];
-         
+                  
          // generate new productQuery with items in hashmap already
          pq = new ProductQuery(productID, quantity, wholesale, salePrice, supplier);
-         
+
          // adds a new row to the table for each new item 
-         test.sendSqlStatement(pq.addRow());         
-         
-            
+         test.sendSqlStatement(pq.addRow());  
+     
       } 
    
    }
@@ -107,15 +101,13 @@ public class Test {
    *  @param productID takes in a string to check the database for
    */
    
-   public static void checkEntry(String productID, Db test) {
+   public static void checkEntry(String productID, Db db) throws SQLException {
       
       ProductQuery item = new ProductQuery(productID);
       
-      ResultSet a = test.sendSqlStatement(item.getRow());
-      
+      ResultSet a = db.sendSqlStatement(item.getRow());
+            
       while(a.next()){System.out.println(a.getRow());}
-      
-   
    }
 
 

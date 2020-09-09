@@ -1,4 +1,3 @@
-package master;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,9 +133,11 @@ public abstract class QueryBuilder {
 
 		keys.forEach((k,v)->{
 			updateVals.append(k);
+			
 			if(v instanceof String){updateVals.append(" varchar(255),");}
 			else if(v instanceof Double){updateVals.append(" double(10,2),");}
 			else if(v instanceof Integer){updateVals.append(" MEDIUMINT(255),");}
+			else if(v == null){updateVals.append(" varchar(255),");}
 		});
 		
 		updateVals.deleteCharAt(updateVals.length() - 1);
