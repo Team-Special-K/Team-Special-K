@@ -1,24 +1,19 @@
-
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class QueryBuilder {
 	
-	static String KEYHEADER; 
-	static String TABLENAME;
-	static int TOTALCOLUMNS;
 	static String DBNAME = "FIRSTDB";
-	
+
+	String keyHeader; 
 	String keyWanted;
+	String tableName;
+	int totalColumns;
 	
 	Map<String, Object> keys = new HashMap<String, Object>();
 	
 	public QueryBuilder() {
-		keyWanted = ""; 
-	}
-	
-	public QueryBuilder(String keyWanted) {
-		this.keyWanted = keyWanted;
+		keyWanted = "";
 	}
 
 	/*
@@ -29,14 +24,24 @@ public abstract class QueryBuilder {
 	public String dbExist() {
 		return "SHOW DATABASES LIKE '" + DBNAME + "';";
 	}
+	 
+	/*
+	 * Creates a SQL query to use this DBNAME
+	 * 
+	 * @return the SQL query
+	 */
+	public String dbUse() {
+		return "USE " + DBNAME + ";";
+	 }
+
 	
 	/*
-	 * Creates a SQL query to check if this TABLENAME exists
+	 * Creates a SQL query to check if this tableName exists
 	 * 
 	 * @return the SQL query
 	 */
 	public String tableExist() {
-		return "SHOW TABLES LIKE '" + TABLENAME + "';";
+		return "SHOW TABLES LIKE '" + tableName + "';";
 	}
 
 	/*
@@ -45,7 +50,7 @@ public abstract class QueryBuilder {
 	 * @return the SQL query
 	 */
 	public String getRow(){
-		String query = "SELECT * " + "FROM " + TABLENAME + " WHERE " + KEYHEADER + " = '" + keyWanted + "';";
+		String query = "SELECT * " + "FROM " + tableName + " WHERE " + keyHeader + " = '" + keyWanted + "';";
 		return query;
 	}
 	
@@ -57,7 +62,7 @@ public abstract class QueryBuilder {
 	 */
 	public String updateRow() { 
 
-		assert(keys.get(KEYHEADER) != null);
+		assert(keys.get(keyHeader) != null);
 		
 		String updateVals = "";
 		
@@ -70,7 +75,7 @@ public abstract class QueryBuilder {
 		
 		updateVals = updateVals.substring(0, updateVals.length() - 1);
 		
-		String query = "UPDATE " + TABLENAME + " SET " + updateVals + " WHERE " + KEYHEADER + " = " + keyWanted + ";";
+		String query = "UPDATE " + tableName + " SET " + updateVals + " WHERE " + keyHeader + " = " + keyWanted + ";";
 		
 		return query;
 	}
@@ -85,7 +90,7 @@ public abstract class QueryBuilder {
 		assert(!keys.isEmpty());
 		
 		StringBuilder updateVals = new StringBuilder();
-		updateVals.append("INSERT INTO " + TABLENAME + "(");
+		updateVals.append("INSERT INTO " + tableName + "(");
 
 		keys.forEach((k,v) -> updateVals.append(k + ","));
 		updateVals.deleteCharAt(updateVals.length() - 1);		
@@ -108,7 +113,7 @@ public abstract class QueryBuilder {
 	 * @return the SQL query
 	 */
 	public String deleteRow() {
-		String query = "DELETE " + "FROM " + TABLENAME + " WHERE " + KEYHEADER + " = " + keyWanted + ";";
+		String query = "DELETE " + "FROM " + tableName + " WHERE " + keyHeader + " = " + keyWanted + ";";
 		return query;
 	}
 	
@@ -128,22 +133,25 @@ public abstract class QueryBuilder {
 	 */
 	public String createTable() {
 
+		if(keys.get(keyHeader) == null){loadKeys();}
+
 		StringBuilder updateVals = new StringBuilder();
-		updateVals.append("CREATE TABLE " + TABLENAME + " (");
+		updateVals.append("CREATE TABLE " + tableName + " (");
 		updateVals.append("id int AUTO_INCREMENT,");
 
 		keys.forEach((k,v)->{
 			updateVals.append(k);
-			
 			if(v instanceof String){updateVals.append(" varchar(255),");}
 			else if(v instanceof Double){updateVals.append(" double(10,2),");}
 			else if(v instanceof Integer){updateVals.append(" MEDIUMINT(255),");}
+			else if(v instanceof Boolean){updateVals.append(" TINYINT(1),");}
 			else if(v == null){updateVals.append(" varchar(255),");}
 		});
 		
-		//updateVals.deleteCharAt(updateVals.length() - 1);
-		updateVals.append("PRIMARY KEY (id)");
+		updateVals.append(" PRIMARY KEY (id)");
 		updateVals.append(");");
+
+		clearKeys();
 		
 		return updateVals.toString();
 	}
@@ -154,4 +162,10 @@ public abstract class QueryBuilder {
 	public void clearKeys() {
 		keys.forEach((k, v) -> v = null);
 	}
+
+	/*
+	 * Loads keys with sample values
+	 * Val types used to create db table columns
+	 */
+	public abstract void loadKeys();
 }

@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditCustomer">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#270602">
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:text="EDIT MODE"
+                    android:textAlignment="textEnd"
+                    android:textColor="#AAAAAA" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="#270602"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <EditText
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:background="#00FFFFFF"
+                    android:paddingLeft="5dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:paddingLeft="5dp"
+                    android:textColor="#AAAAAA"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Device:"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <EditText
+                            android:id="@+id/device"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Part:"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <EditText
+                            android:id="@+id/part"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="100dp"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Service:"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.32"
+                        android:maxHeight="100dp">
+
+                        <EditText
+                            android:id="@+id/service"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:maxHeight="100dp"
+                            android:paddingLeft="5dp"
+                            android:singleLine="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider7"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FFFFFF" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Date Created:"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <EditText
+                            android:id="@+id/date"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Delivery Date:"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <EditText
+                            android:id="@+id/delivery"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:focusable="false"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Have phone?"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <ToggleButton
+                            android:id="@+id/havePhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="TextView"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textOff="No"
+                            android:textOn="Yes"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.68">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="Contacted?"
+                            android:textColor="#BEBEBE" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.32">
+
+                        <ToggleButton
+                            android:id="@+id/contacted"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="#1A1A1A"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:text="TextView"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textOff="No"
+                            android:textOn="Yes"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider8"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FFFFFF" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/notes"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#1A1A1A"
+                        android:gravity="top"
+                        android:padding="5dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="40dp">
+
+                    <Button
+                        android:id="@+id/saveButton"
+                        style="@android:style/Widget.Holo.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Save" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -15,8 +15,10 @@ public class Test {
    */
    public static void main(String[] args) throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
 	  
-      Db database = new Db();
-      ProductQuery query = new ProductQuery("TestSku");
+      Db database = Db.getInstance();
+
+      ProductQuery query = new ProductQuery();
+      query.loadKeys();
       
       ResultSet testing = database.sendSqlStatement("USE "+ QueryBuilder.DBNAME + ";");
 

@@ -1,28 +1,33 @@
-
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
-
-public class Db{
+public final class Db{
 	
-	Connection connect = null;
-    String dbAddress = "jdbc:mysql://localhost:3306?user=root";
-    
-    public Db() {
-    	
-    	getConnection();  
+	static Connection connect = null;
+    final static String dbAddress = "jdbc:mysql://localhost:3306?user=root";
+    private static final Db instance = new Db();
+
+    private Db(){
+        getConnection();
     }
-    
+
+    /*
+     * Returns the reference to the sole instance of the db
+     */
+    public static Db getInstance(){
+        if(connect == null) getConnection();
+        return instance;
+    }
+
     /*
      * Gets the connection to an existing data MySql database
      * 
      * @return true if a successful connection was made
      */
-    private boolean getConnection(){
+    private static boolean getConnection(){
     	
         try {
         	connect = DriverManager.getConnection(dbAddress);        
@@ -50,10 +55,7 @@ public class Db{
     		boolean sqlSuccess = state.execute(sqlCommands);
     		if(sqlSuccess) {results = state.getResultSet();}    		
     	}
-    	catch(Exception e) {
-    		e.printStackTrace();
-    	}
+    	catch(Exception e){}
     	return results;
-    }
-        
+    }    
 }

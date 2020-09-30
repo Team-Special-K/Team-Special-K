@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="61dp"
+    android:background="#141414"
+    android:orientation="horizontal"
+    android:weightSum="100">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginRight="1dp"
+        android:layout_weight="33"
+        android:orientation="vertical">
+
+
+        <View
+            android:id="@+id/divider6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginRight="1dp"
+        android:layout_weight="20.5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginBottom="1dp"
+            android:background="#383838"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView1"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/textPhone"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="#383838"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView2"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginRight="1dp"
+        android:layout_weight="20.5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textPart"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginBottom="1dp"
+            android:background="#383838"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView1"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/textDelivery"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="#383838"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView2"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="20"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/checkBox1"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginBottom="1dp"
+            android:background="#383838"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="Have?"
+            android:textColor="#FFFFFF" />
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="match_parent"
+            android:layout_height="28.5dp"
+            android:background="#383838"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="Called?"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
