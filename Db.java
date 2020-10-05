@@ -68,7 +68,7 @@ public final class Db{
      * @param fileName the csv file name
      * @param obj the table query object 
      */
-    public void readCsv(String fileName, Object obj) throws FileNotFoundException {
+    public void loadCsv(String fileName, Object obj) throws FileNotFoundException {
 
         File inputDataFile = new File(fileName);
         Scanner inputFile = new Scanner(inputDataFile);
@@ -95,5 +95,38 @@ public final class Db{
             this.sendSqlStatement(tableObj.addRow());
         } 
         inputFile.close();
+    }
+
+    /*
+     * Returns all the rows from the table using filters
+     * 
+     * @param tableType get rows from table 
+     * @param useKeyFilter use table.keys as sql filters
+     * @return ResultSet of sql execution
+     */
+    public ResultSet getAllRows(QueryBuilder table, boolean useKeyFilter){
+
+        String query = "SELECT * from " + table.tableName;
+        int filterCount = 0;
+        
+        for(Object v: table.keys.values()) 
+            if(v != null){
+                filterCount += 1;
+            }
+        
+        if(useKeyFilter){
+            int i = 1;
+            for(String k : table.keys.keySet()){
+                Object v = table.keys.get(k);
+                if(v != null){
+                    query += " WHERE " + k + " = '" + v + "' ";
+                    if(i++ != filterCount) 
+                        query += " AND ";
+                    }
+            }
+        }
+        query += ";";
+
+        return this.sendSqlStatement(query);
     }
 }

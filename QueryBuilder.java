@@ -156,7 +156,9 @@ public abstract class QueryBuilder {
 	 * Assigns null values to all of the keys in this key hashmap
 	 */
 	public void clearKeys() {
-		keys.forEach((k, v) -> v = null);
+		var newHashMap = new HashMap<String, Object>();
+		keys.forEach((k, v) -> newHashMap.put(k, null));
+		this.keys = newHashMap;
 	}
 
 	/*
