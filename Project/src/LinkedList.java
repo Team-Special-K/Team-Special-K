@@ -33,10 +33,7 @@ public class LinkedList{
     }
     
     public LinkedList(ResultSet orders, Db db) throws SQLException, SQLSyntaxErrorException {
-        double number = 4565.2;
-        push("Tom@gmail.com", number);
-        push("Cesar@gmail.com", 34.66);
-        push("Kamron@gmail.com", 455);
+
         ResultSetMetaData metadata = orders.getMetaData();
         int columncount = metadata.getColumnCount();
 

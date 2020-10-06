@@ -18,64 +18,36 @@ public class Analytics {
     //test
     public Analytics() throws SQLSyntaxErrorException, SQLException {
 
-
-        // Initially set table name to null, this will change when the other methods are called
-        String tableName = null;
-
-        
         // Call our instance method to get database
         Db db = Db.getInstance();
 
-        OrderQuery orders = new OrderQuery();
-
-        //  ResultSet a = db.getAllRows(orders, false);
-
         double test = calcAssets(db);
 
-        bestCustomers(db);
+        System.out.println("Total number of assets: " + test);
+
+        String output = orderStats(db, "10/5/2020");
+
+        System.out.println(output);
 
 
     }
 
     public static void main(String[] args)throws SQLException, SQLSyntaxErrorException {
-        
         Analytics data = new Analytics();
-
-
     }
 
     // methods that pulls information from the tables and stores it in different arrays for me to use. 
 
-    public static ResultSet getProducts(Db db) {
+    public static ResultSet getProducts(Db db) throws SQLException, SQLSyntaxErrorException {
         String tableName = "Products";
-
-        // this statement returns the entire table to us as a result set
         return db.sendSqlStatement("SELECT quantity, wholesale_cost FROM " + tableName + ";");
-
     }
 
     
-    public static ResultSet getOrders(Db db) {
+    public static ResultSet getOrders(Db db) throws SQLException, SQLSyntaxErrorException {
         String tableName = "Orders";
-
-
-       return db.sendSqlStatement("SELECT email, product_id, quantity FROM " + tableName + ";");
-
+        return db.sendSqlStatement("SELECT email, product_id, quantity FROM " + tableName + ";");
     }
-
-    
-
-
-
-    // method that builds gui for computer to use. This should display all of the analytics information.
-
-    
-
-
-
-
-
- 
 
     // these methods will take in whatever data we receive and calculate the meaningful statistics about our database
     // each method will be named after what it calculates and our gui will call all of them
@@ -110,8 +82,6 @@ public class Analytics {
 
             }
         }
-        
-        System.out.println(sumAssets);
 
         return sumAssets;
 
@@ -133,6 +103,40 @@ public class Analytics {
         LinkedList ordersSorted = new LinkedList(orderTable, db);
 
     }
+
+    // this method calculates how many orders we have for a given day and the dollar amount of these orders
+    // @param date, takes in a string for a given date and calculates stats for that day
+    public static String orderStats(Db db, String date) throws SQLException, SQLSyntaxErrorException {
+
+        OrderQuery orders = new OrderQuery();
+        ProductQuery item = new ProductQuery();
+        int numOrders = 0;
+        double totalCost = 0;
+        double orderTotal = 0;
+
+        db.sendSqlStatement(orders.dbUse());
+
+        ResultSet orderTable = db.sendSqlStatement("SELECT email, product_id, quantity FROM orders WHERE date = '"+ date+ "';");
+
+        db.sendSqlStatement(item.dbUse());
+
+        while(orderTable.next()) {
+            numOrders++;
+            ResultSet itemCost = db.sendSqlStatement("SELECT sale_price FROM Products WHERE product_id = '" + orderTable.getString(2) + "';");
+
+            while(itemCost.next()) {
+                orderTotal = Double.parseDouble(orderTable.getString(3)) * Double.parseDouble(itemCost.getString(1));
+                orderTotal = Math.round(orderTotal * 100.0) / 100.0; 
+            }
+
+            totalCost += orderTotal;
+            
+        }
+
+        return "For date: " + date + " Number of orders: "  + numOrders + " Total cost of orders: " + totalCost; 
+
+    }
+
 
 
 
