@@ -141,11 +141,7 @@ public abstract class QueryBuilder {
 
 		keys.forEach((k,v)->{
 			updateVals.append(k);
-			if(v instanceof String){updateVals.append(" varchar(255),");}
-			else if(v instanceof Double){updateVals.append(" double(10,2),");}
-			else if(v instanceof Integer){updateVals.append(" MEDIUMINT(255),");}
-			else if(v instanceof Boolean){updateVals.append(" TINYINT(1),");}
-			else if(v == null){updateVals.append(" varchar(255),");}
+			updateVals.append(getType(v));
 		});
 		
 		updateVals.append(" PRIMARY KEY (id)");
@@ -160,7 +156,9 @@ public abstract class QueryBuilder {
 	 * Assigns null values to all of the keys in this key hashmap
 	 */
 	public void clearKeys() {
-		keys.forEach((k, v) -> v = null);
+		var newHashMap = new HashMap<String, Object>();
+		keys.forEach((k, v) -> newHashMap.put(k, null));
+		this.keys = newHashMap;
 	}
 
 	/*
@@ -168,4 +166,16 @@ public abstract class QueryBuilder {
 	 * Val types used to create db table columns
 	 */
 	public abstract void loadKeys();
+
+	/*
+	* Get associated mysql column type for object value
+	*/
+	public String getType(Object v){
+		String returnType = null;
+		if(v instanceof String or || v == null){returnType = " varchar(255),";}
+		else if(v instanceof Double){returnType = " double(10,2),";}
+		else if(v instanceof Integer){returnType = " MEDIUMINT(255),";}
+		else if(v instanceof Boolean){returnType = " TINYINT(1),";}
+		return returnType;
+	}
 }
