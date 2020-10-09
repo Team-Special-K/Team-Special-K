@@ -12,19 +12,19 @@ public class OrderQuery extends QueryBuilder{
     int confirmation, String shipAddress, String email) {
         this();
         keys.put("date", date);
-		keys.put("email", email);
-		keys.put("ship_address", shipAddress);
+		keys.put("cust_email", email);
+		keys.put("cust_location", shipAddress);
 		keys.put("product_id", productId);
-        keys.put("quantity", quantity);
+        keys.put("product_quantity", quantity);
         keys.put("confirmation", confirmation);
 }
 
     public void loadKeys(){
         keys.put("date", "");
-		keys.put("email", "");
-		keys.put("ship_address", "");
+		keys.put("cust_email", "");
+		keys.put("cust_location", "");
 		keys.put("product_id", "");
-        keys.put("quantity", 0);
+        keys.put("product_quantity", 0);
         keys.put("confirmation", false);	
     }
 

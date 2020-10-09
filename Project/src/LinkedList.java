@@ -48,6 +48,7 @@ public class LinkedList{
                 double orderTotal = 0;
                 while(itemCost.next()) {
                 orderTotal = Double.parseDouble(orders.getString(3)) * Double.parseDouble(itemCost.getString(1)); 
+                orderTotal = Math.round(orderTotal * 100.0) / 100.0;
                 }
                 // add to list using existing method
                 System.out.println(orders.getString(1));

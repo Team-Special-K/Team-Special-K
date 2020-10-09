@@ -88,23 +88,23 @@ public abstract class QueryBuilder {
 	public String addRow() {
 		
 		assert(!keys.isEmpty());
-		
-		StringBuilder updateVals = new StringBuilder();
-		updateVals.append("INSERT INTO " + tableName + "(");
-
-		keys.forEach((k,v) -> updateVals.append(k + ","));
-		updateVals.deleteCharAt(updateVals.length() - 1);		
-		updateVals.append(") VALUES (");
-		
-		keys.forEach((k,v) -> {
-			if(v instanceof String){updateVals.append("'" + v + "',");}
-			else{updateVals.append(v + ",");}
-		});
-		updateVals.deleteCharAt(updateVals.length() - 1);		
-
-		updateVals.append(");");
-		
-		return updateVals.toString();
+        
+        StringBuilder updateVals = new StringBuilder();
+        updateVals.append("INSERT INTO " + tableName + "(");
+ 
+        keys.forEach((k,v) -> updateVals.append(k + ","));
+        updateVals.deleteCharAt(updateVals.length() - 1);       
+        updateVals.append(") VALUES (");
+        
+        keys.forEach((k,v) -> {
+            if(v instanceof String){updateVals.append("'" + v + "',");}
+            else{updateVals.append(v + ",");}
+        });
+        updateVals.deleteCharAt(updateVals.length() - 1);       
+ 
+        updateVals.append(");");
+        
+        return updateVals.toString();
 	}
 	
 	/*
@@ -160,7 +160,9 @@ public abstract class QueryBuilder {
 	 * Assigns null values to all of the keys in this key hashmap
 	 */
 	public void clearKeys() {
-		keys.forEach((k, v) -> v = null);
+		var newHashMap = new HashMap<String, Object>();
+        keys.forEach((k, v) -> newHashMap.put(k, null));
+        this.keys = newHashMap;
 	}
 
 	/*
@@ -168,4 +170,18 @@ public abstract class QueryBuilder {
 	 * Val types used to create db table columns
 	 */
 	public abstract void loadKeys();
+
+
+	public String getType(Object v){
+        String returnType = null;
+        if(v instanceof String || v == null){returnType = " varchar(255),";}
+        else if(v instanceof Double){returnType = " double(10,2),";}
+        else if(v instanceof Integer){returnType = " MEDIUMINT(255),";}
+        else if(v instanceof Boolean){returnType = " TINYINT(1),";}
+        return returnType;
+    }
+
+
+
+
 }
