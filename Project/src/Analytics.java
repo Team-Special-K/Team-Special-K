@@ -235,13 +235,61 @@ public class Analytics {
             frame.repaint();
          }
       });
-
-
-
     }
- 
-   
+
+      public static ArrayList<Tup<Double,String>> sortTuple(ArrayList<Tup<Double,String>> unsorted, int x) {
+
+        ArrayList<Tup<Double,String>> sorted = new ArrayList <Tup<Double,String>>();
+
+        for(Tup<Double, String> tuple: unsorted){
+
+            int totalItems = sorted.size();
+            if(totalItems == 0){
+                sorted.add(0, tuple);
+                continue;
+            }
+            else if(totalItems > x) 
+                totalItems = x;
+
+            for(int i = 0; i < totalItems; i++){ //iterate bestTen[10+]
+                if(tuple.x > sorted.get(i).x){ //compare prices
+                    sorted.add(i, tuple);
+                    break;
+                }
+            }
+        }
+        return sorted;
+    }
 
 
+    public static ArrayList<Tup<Double,String>> totalSpent(ResultSet ordersTable) throws NumberFormatException, SQLException {
 
+        CopyOnWriteArrayList<Tup<Double,String>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String>>();
+        while(ordersTable.next()){
+
+            String email = ordersTable.getString(1);
+            Integer quant = Integer.parseInt(ordersTable.getString(2));
+            Double price = Double.parseDouble(ordersTable.getString(3));
+            Double total = quant * price;
+
+            var newline = new Tup<Double, String>(total,email);
+            boolean found = false;
+
+            for(int i = 0; i < sumTotal.size();i++) 
+            {
+                if(e.equals(sumTotal.get(i).y)){
+                    Double newAddition =  total + sumTotal.get(i).x;
+                    sumTotal.remove(i);
+                    var reinsert = new Tup<Double, String>(newAddition, email);
+                    sumTotal.add(i, reinsert);
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){sumTotal.add(newline);}
+        }
+        var sumTotalArr = new ArrayList<Tup<Double, String>>();
+        sumTotalArr.addAll(sumTotal);
+        return sumTotalArr;
+    }
 }
