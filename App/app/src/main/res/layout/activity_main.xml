@@ -54,6 +54,14 @@
                 android:layout_height="wrap_content"
                 android:text="Add Order" />
 
+            <Button
+                android:id="@+id/productsButton"
+                style="@android:style/Widget.Holo.Button"
+                android:layout_width="275dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Products" />
+
             <View
                 android:id="@+id/divider3"
                 android:layout_width="275dp"

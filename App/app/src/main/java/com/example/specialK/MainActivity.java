@@ -20,12 +20,21 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseHelper = new DatabaseHelper(this);
 
         Button button1 = (Button) findViewById(R.id.partsButton);
+        Button button2 = (Button) findViewById(R.id.productsButton);
 
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent orderIntent = new Intent(MainActivity.this, AddOrder.class);
                 startActivity(orderIntent);
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent productsIntent = new Intent(MainActivity.this, Products.class);
+                startActivity(productsIntent);
             }
         });
     }
