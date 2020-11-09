@@ -3,7 +3,7 @@ import java.util.Map;
 
 public abstract class QueryBuilder {
 	
-	static String DBNAME = "FIRSTDB";
+	final static String DBNAME = "FIRSTDB";
 
 	String keyHeader; 
 	String keyWanted;
@@ -21,7 +21,7 @@ public abstract class QueryBuilder {
 	 * 
 	 * @return the SQL query
 	 */
-	public String dbExist() {
+	public static String dbExist() {
 		return "SHOW DATABASES LIKE '" + DBNAME + "';";
 	}
 	 
@@ -30,7 +30,7 @@ public abstract class QueryBuilder {
 	 * 
 	 * @return the SQL query
 	 */
-	public String dbUse() {
+	public static String dbUse() {
 		return "USE " + DBNAME + ";";
 	 }
 
@@ -122,7 +122,7 @@ public abstract class QueryBuilder {
 	 * 
 	 * @return the SQL query
 	 */
-	public String createDb() {
+	public static String dbCreate() {
 		return "CREATE DATABASE " + DBNAME + ";";
 	}
 	
@@ -172,7 +172,7 @@ public abstract class QueryBuilder {
 	*/
 	public String getType(Object v){
 		String returnType = null;
-		if(v instanceof String or || v == null){returnType = " varchar(255),";}
+		if(v instanceof String || v == null){returnType = " varchar(255),";}
 		else if(v instanceof Double){returnType = " double(10,2),";}
 		else if(v instanceof Integer){returnType = " MEDIUMINT(255),";}
 		else if(v instanceof Boolean){returnType = " TINYINT(1),";}
