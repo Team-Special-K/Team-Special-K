@@ -8,6 +8,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -17,13 +21,11 @@ import javax.crypto.SecretKeyFactory;
 
 public class PasswordHash {
 
-    public static void main(String[] args)
+    public static void readFile()
             throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 
         // Here we will use a salt to enhance our encryption
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
+        byte[] salt = genSalt();
 
         Scanner scnr = new Scanner(System.in);
         // read in a password input file of the users choice
@@ -50,9 +52,44 @@ public class PasswordHash {
 
     }
 
+    public static ArrayList<String> readDatabase() throws IOException, SQLSyntaxErrorException, SQLException,
+            NoSuchAlgorithmException, InvalidKeySpecException {
+
+        // generate salt
+        byte[] salt = genSalt();
+        // Get database instance
+        Db db = Db.getInstance();
+
+        db.sendSqlStatement("USE " + QueryBuilder.DBNAME + ";");
+
+        ResultSet emails = getEmails(db);
+
+        ArrayList<String> hashedEmails = new ArrayList<String>();
+
+        while(emails.next()) {
+            String email = emails.getString(1);
+
+            KeySpec spec = new PBEKeySpec(email.toCharArray(), salt, 65536, 128);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+
+            hashedEmails.add(Arrays.hashCode(hash));
+
+        }
+        
+        return hashedEmails;
+
+    }
+
+    public static ResultSet getEmails(Db db) throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
+        String tableName = "Orders";
+        return db.sendSqlStatement("SELECT cust_email FROM " + tableName + ";");
+    }
+
     // Method that generates the salt for our code and stores it into a file
 
-    public static void genSalt() throws IOException {
+    public static byte[] genSalt() throws IOException {
 
         //write information to file if needed 
         final String OUTPUT_FILE = "Salt.txt";
@@ -78,7 +115,7 @@ public class PasswordHash {
         // Close output file
         outputFile.close();
 
-
+        return salt;
     }
 
     
@@ -86,8 +123,31 @@ public class PasswordHash {
 
 
     // Method that compares user input to a stored password in the table using our same hash and salt
+    // Simple method returns true if the hashed email or password in question matches that of one stored in the database.  
+    public static boolean comparePass(String hashedPassword, String databaseVal) {
+        if(hashedPassword.equals(databaseVal)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
+    public static ArrayList<String> getHash(String email){
+
+        byte[] salt = genSalt();
+        ArrayList<String> hashedEmails = new ArrayList<String>();
+
+        KeySpec spec = new PBEKeySpec(email.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = factory.generateSecret(spec).getEncoded();
+
+        hashedEmails.add(Arrays.hashCode(hash));
+
+        return hashedEmails;
+
+    }
 
 
     
