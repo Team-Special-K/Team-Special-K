@@ -61,7 +61,7 @@ public class Algorithms {
      * @param results a sql query resultSet of db query results
      * @return ArrayList of tuples <daySales, dateString, dateObj>
      */
-    public ArrayList<Tup<Double, String, LocalDateTime>> getDailyAssets(ArrayList<String[]> results){
+    public ArrayList<Tup<Double, String, LocalDateTime>> getDailyAssetsSold(ArrayList<String[]> results){
 
         CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>>();
         final String EOL = "T00:00:00.000000000";
@@ -116,8 +116,9 @@ public class Algorithms {
         double start = startAssets;
 
         for(var tuple : dailySales){
+            start = start - tuple.x;
             double[] salesEpoch = new double[]{
-                start - tuple.x, tuple.z.toEpochSecond(ZoneOffset.UTC)
+                start, tuple.z.toEpochSecond(ZoneOffset.UTC)
             };
             assets.add(salesEpoch);
         }
