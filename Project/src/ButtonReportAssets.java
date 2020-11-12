@@ -5,18 +5,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 public class ButtonReportAssets extends ButtonReport {
 
     private final Algorithms algorithm;
 
     public ButtonReportAssets(JPanel outputArea, Algorithms algorithm, String name, 
-                                JTextField dateStart, JTextField dateEnd) {
+                                DateFields dateRange) {
         super(outputArea, name);    
         this.algorithm = algorithm;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
+        this.dateRange = dateRange;
     }
 
     /*
@@ -31,14 +29,12 @@ public class ButtonReportAssets extends ButtonReport {
                               + "JOIN products ON orders.product_id = products.product_id;";
         ResultSet allOrders = db.sendSqlStatement(joinAssetQuery);
 
-        String EOL = "T00:00:00.000000000";
-        LocalDateTime dateStartNow = LocalDateTime.parse(dateStart.getText() + EOL);
-        LocalDateTime dateEndNow = LocalDateTime.parse(dateEnd.getText() + EOL);
-
         ArrayList<String[]> filteredOrders = null;
 
         try{
-            filteredOrders = Algorithms.filterByDate(dateStartNow, dateEndNow, allOrders);
+            filteredOrders = Algorithms.filterByDate(dateRange.getStartTime(), 
+                                                    dateRange.getEndTime(), 
+                                                    allOrders);
         } catch(SQLException e){
             e.printStackTrace();
         }

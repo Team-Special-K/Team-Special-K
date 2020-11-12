@@ -9,28 +9,28 @@ public class DateFields {
     private JTextField dateEnd;
     private JTextField lastDateStart;
     private JTextField lastDateEnd;
+
     public static final int DATE_CHAR_LEN = 10;
     private static final String EOL = "T00:00:00.000000000";
-    public static void main(String args[]){
 
-        var a = new DateFields(new JTextField("2012-01-01"), new JTextField("2442-05-01"));
-        System.out.println(a.checkDatesValid());
-    }
-
-    
-    public DateFields(JTextField dateStart, JTextField dateEnd){
-        this.dateStart = dateStart;
-        this.dateEnd = dateStart;
+    /*
+     * Constructor
+     * Provides interaction with date fields
+     */
+    public DateFields(){
+        String dateNow = LocalDateTime.now().toString().substring(0, 10);
+        dateStart = new JTextField(dateNow);
+        dateEnd = new JTextField(dateNow);
         lastDateStart = null;
         lastDateEnd = null;
     }
 
     /*
-     * Checks date range fields for validity
+     * Checks date range fields for length and format validity
      * 
      * @return boolean true if fields meet size and format requirements
      */
-    public boolean checkDatesValid(){
+    protected boolean checkDatesValid(){
 
         String dateStartText = dateStart.getText();
         String dateEndText = dateEnd.getText();
@@ -51,11 +51,32 @@ public class DateFields {
     }  
 
     /*
+     * Checks date fields contents for change vs previous button click contents
+     * 
+     * @return boolean true fields have changed
+     */
+    protected boolean checkFieldsChange(){
+        if(!dateStart.getText().equals(lastDateStart.getText()) 
+        || !dateEnd.getText().equals(lastDateEnd.getText())){
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * Set previous date fields state to current fields contents
+     */
+    protected void setFieldsLastState(){
+        this.lastDateStart = new JTextField(dateStart.getText());
+        this.lastDateEnd = new JTextField(dateEnd.getText());
+    }
+
+    /*
      * Creates a LocalDateTime object from the date range start field
      * 
      * @return LocalDateTime object created from the text field string
      */
-    public LocalDateTime getStartTime(){
+    protected LocalDateTime getStartTime(){
         return LocalDateTime.parse(dateStart.getText() + EOL);
     }
 
@@ -64,8 +85,25 @@ public class DateFields {
      * 
      * @return LocalDateTime object created from the text field string
      */
-    public LocalDateTime getEndTime(){
+    protected LocalDateTime getEndTime(){
         return LocalDateTime.parse(dateEnd.getText() + EOL);
     }
-    
+
+    /*
+     * Returns start date field
+     * 
+     * @return the JTextField start date field
+     */
+    protected JTextField getStartField(){
+        return this.dateStart;
+    }
+
+    /*
+     * Returns end date field
+     * 
+     * @return the JTextField end date field
+     */
+    protected JTextField getEndField(){
+        return this.dateEnd;
+    }
 }
