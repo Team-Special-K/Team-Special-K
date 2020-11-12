@@ -6,6 +6,7 @@ import java.sql.SQLSyntaxErrorException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Algorithms {
@@ -52,6 +53,75 @@ public class Algorithms {
         var sumTotalArr = new ArrayList<Tup<Double, String, LocalDateTime>>();
         sumTotalArr.addAll(sumTotal);
         return sumTotalArr;
+    }
+
+    /*
+     * Returns unsorted list of daily assets sold 
+     * 
+     * @param results a sql query resultSet of db query results
+     * @return ArrayList of tuples <daySales, dateString, dateObj>
+     */
+    public ArrayList<Tup<Double, String, LocalDateTime>> getDailyAssets(ArrayList<String[]> results){
+
+        CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>>();
+        final String EOL = "T00:00:00.000000000";
+
+        for(var result : results){
+
+            String date = result[0];
+            assert(date.length() < 11);
+            LocalDateTime time = LocalDateTime.parse(date + EOL);
+
+            Integer quant = Integer.parseInt(result[1]);
+            Double price = Double.parseDouble(result[2]);
+            Double total = quant * price;
+
+            var newline = new Tup<Double, String, LocalDateTime>(total,date,time);
+            boolean found = false;
+
+            for(int i = 0; i < sumTotal.size();i++) 
+            {
+                if(date.equals(sumTotal.get(i).y)){
+                    Double newAddition =  total + sumTotal.get(i).x;
+                    sumTotal.remove(i);
+                    var reinsert = new Tup<Double, String, LocalDateTime>(newAddition, date, time);
+                    sumTotal.add(i, reinsert);
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){sumTotal.add(newline);}
+        }
+        var sumTotalArr = new ArrayList<Tup<Double, String, LocalDateTime>>();
+        sumTotalArr.addAll(sumTotal);
+        return sumTotalArr;
+    }
+
+    /*
+     * Calculates assets on a time series
+     * 
+     * @param startAssets the dollar amount of sales starting with
+     * @param dailySales an ArrayList of sales 
+     * @return array of <assetsTotal, epoch>
+     */
+    public ArrayList<double[]> calcAssetsFromStart(double startAssets, ArrayList<Tup<Double, String, LocalDateTime>> dailySales){
+
+        Comparator<Tup<Double, String, LocalDateTime>> epochSort = 
+                (Tup<Double, String, LocalDateTime>a, Tup<Double, String, LocalDateTime>b) 
+                    -> Long.compare(a.z.toEpochSecond(ZoneOffset.UTC),b.z.toEpochSecond(ZoneOffset.UTC));
+
+        dailySales.sort(epochSort);
+
+        ArrayList<double[]> assets = new ArrayList<>(); //double assets state in dollars, double epoch
+        double start = startAssets;
+
+        for(var tuple : dailySales){
+            double[] salesEpoch = new double[]{
+                start - tuple.x, tuple.z.toEpochSecond(ZoneOffset.UTC)
+            };
+            assets.add(salesEpoch);
+        }
+        return assets;
     }
 
     /*
@@ -133,9 +203,9 @@ public class Algorithms {
      * 
      * @return sumAssets sum of current inventory wholesalecost
      */
-    public double getAssets() throws SQLSyntaxErrorException, SQLException {
+    public double getSumAssets() throws SQLSyntaxErrorException, SQLException {
 
-        ResultSet assetArray = getProducts(db);
+        ResultSet assetArray = getProducts();
         double sumAssets = 0;
 
         ResultSetMetaData metadata = assetArray.getMetaData();
@@ -158,7 +228,7 @@ public class Algorithms {
      * @param db the database handle
      * @return ResultSet of items in DB
      */
-    public ResultSet getProducts(Db db) throws SQLException, SQLSyntaxErrorException {
+    public ResultSet getProducts() throws SQLException, SQLSyntaxErrorException {
         String tableName = "Products";
         return db.sendSqlStatement("SELECT quantity, wholesale_cost FROM " + tableName + ";");
     }
@@ -169,10 +239,23 @@ public class Algorithms {
      * @param db the database handle
      * @return ResultSet of orders in DB
      */
-    public ResultSet getOrders(Db db) throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
+    public ResultSet getOrders() throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
         String tableName = "Orders";
         return db.sendSqlStatement("SELECT cust_email, product_id, product_quantity FROM " + tableName + ";");
     }
+
+    /*
+     * Get all asset fields
+     * 
+     * @param db the database handle
+     * @return ResultSet the database response composed of date, quantity, wholesale_cost
+     */
+    public ResultSet getAssets() throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
+        String query = "SELECT orders.date, orders.product_quantity, products.wholesale_cost "
+                     + "FROM orders JOIN products ON orders.product_id = products.product_id;";
+        return db.sendSqlStatement(query);
+    }
+
 
     /*
      * Filters array of orders by a date range
@@ -182,7 +265,7 @@ public class Algorithms {
      * @param rows the object returned from the SQL query to the db
      * @return ArrayList of order columns
      */
-    public static ArrayList<String[]> filterByDate(LocalDateTime start, LocalDateTime end, ResultSet rows) throws SQLException {
+    public static ArrayList<String[]> filterByDate(LocalDateTime start, LocalDateTime end, ResultSet rows, int dateColumn) throws SQLException {
 
         final long startEpoch = start.toEpochSecond(ZoneOffset.UTC);
         final long endEpoch = end.toEpochSecond(ZoneOffset.UTC);
@@ -193,8 +276,8 @@ public class Algorithms {
 
         while(rows.next()){
             
-            assert(rows.getString(4).length() < 11);
-            LocalDateTime time = LocalDateTime.parse(rows.getString(4) + "T00:00:00.000000000");
+            assert(rows.getString(dateColumn).length() < 11);
+            LocalDateTime time = LocalDateTime.parse(rows.getString(dateColumn) + "T00:00:00.000000000");
             orderEpoch = time.toEpochSecond(ZoneOffset.UTC);
 
             if(orderEpoch < startEpoch || orderEpoch > endEpoch) continue;
