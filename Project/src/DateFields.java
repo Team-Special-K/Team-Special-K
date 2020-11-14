@@ -1,5 +1,6 @@
 import javax.swing.JTextField;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +12,7 @@ public class DateFields {
     private JTextField lastDateEnd;
 
     public static final int DATE_CHAR_LEN = 10;
-    private static final String EOL = "T00:00:00.000000000";
+    static final String EOL = "T00:00:00.000000000";
 
     /*
      * Constructor
@@ -76,8 +77,26 @@ public class DateFields {
      * 
      * @return LocalDateTime object created from the text field string
      */
-    protected LocalDateTime getStartTime(){
+    protected LocalDateTime getStartTimeText(){
         return LocalDateTime.parse(dateStart.getText() + EOL);
+    }
+
+    /*
+     * Parse and return start fields time in seconds epoch
+     * 
+     * @return long seconds from epoch
+     */
+    protected long getStartTimeEpoch(){
+        return LocalDateTime.parse(dateStart.getText() + EOL).toEpochSecond(ZoneOffset.UTC);
+    }
+
+    /*
+     * Parse and return end fields time in seconds epoch
+     * 
+     * @return long seconds from epoch
+     */
+    protected long getEndTimeEpoch(){
+        return LocalDateTime.parse(dateEnd.getText() + EOL).toEpochSecond(ZoneOffset.UTC);
     }
 
     /*
@@ -85,7 +104,7 @@ public class DateFields {
      * 
      * @return LocalDateTime object created from the text field string
      */
-    protected LocalDateTime getEndTime(){
+    protected LocalDateTime getEndTimeText(){
         return LocalDateTime.parse(dateEnd.getText() + EOL);
     }
 
