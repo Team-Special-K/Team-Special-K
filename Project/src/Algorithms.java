@@ -1,11 +1,8 @@
-import java.io.FileNotFoundException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,77 +11,31 @@ public class Algorithms {
     private final Db db = Db.getInstance();
 
     /*
-     * Calculates total spent by each user email
+     * Gets unsorted list of assets sold daily.
      * 
-     * @param ordersTable a sql query resultSet of all orders
-     * @return array of tuples <totalspent, email>
+     * @param results a sql query array
+     * @return KTYPE of sets daySales, dateString, dateObj
      */
-    public ArrayList<Tup<Double, String, LocalDateTime>> getUsersSpent(ArrayList<String[]> ordersTable) {
+    public KType getDailyAssetsSold(KType results){
 
-        CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>>();
+        CopyOnWriteArrayList<Tup<Double,Integer,Long>> sumTotal = new CopyOnWriteArrayList<Tup<Double,Integer, Long>>();
 
-        for (var row : ordersTable){
+        for(var result : results.data){
 
-            String email = row[0];
-            Integer quant = Integer.parseInt(row[1]);
-            Double price = Double.parseDouble(row[2]);
-
-
-            assert(row[3].length() < 11);
-            LocalDateTime time = LocalDateTime.parse(row[3] + "T00:00:00.000000000");
-            Double total = quant * price;
-
-            var newline = new Tup<Double, String, LocalDateTime>(total,email,time);
-            boolean found = false;
-
-            for(int i = 0; i < sumTotal.size();i++) 
-            {
-                if(email.equals(sumTotal.get(i).y)){
-                    Double newAddition =  total + sumTotal.get(i).x;
-                    sumTotal.remove(i);
-                    var reinsert = new Tup<Double, String, LocalDateTime>(newAddition, email, time);
-                    sumTotal.add(i, reinsert);
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){sumTotal.add(newline);}
-        }
-        var sumTotalArr = new ArrayList<Tup<Double, String, LocalDateTime>>();
-        sumTotalArr.addAll(sumTotal);
-        return sumTotalArr;
-    }
-
-    /*
-     * Returns unsorted list of daily assets sold 
-     * 
-     * @param results a sql query resultSet of db query results
-     * @return ArrayList of tuples <daySales, dateString, dateObj>
-     */
-    public ArrayList<Tup<Double, String, LocalDateTime>> getDailyAssetsSold(ArrayList<String[]> results){
-
-        CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>>();
-        final String EOL = "T00:00:00.000000000";
-
-        for(var result : results){
-
-            String date = result[0];
-            assert(date.length() < 11);
-            LocalDateTime time = LocalDateTime.parse(date + EOL);
-
+            long epoch = Long.parseLong(result[2]);
             Integer quant = Integer.parseInt(result[1]);
-            Double price = Double.parseDouble(result[2]);
+            Double price = Double.parseDouble(result[0]);
             Double total = quant * price;
 
-            var newline = new Tup<Double, String, LocalDateTime>(total,date,time);
+            var newline = new Tup<Double,Integer,Long>(total,0,epoch);
             boolean found = false;
 
             for(int i = 0; i < sumTotal.size();i++) 
             {
-                if(date.equals(sumTotal.get(i).y)){
+                if(epoch == sumTotal.get(i).z){
                     Double newAddition =  total + sumTotal.get(i).x;
                     sumTotal.remove(i);
-                    var reinsert = new Tup<Double, String, LocalDateTime>(newAddition, date, time);
+                    var reinsert = new Tup<Double, Integer, Long>(newAddition, 0, epoch);
                     sumTotal.add(i, reinsert);
                     found = true;
                     break;
@@ -92,203 +43,163 @@ public class Algorithms {
             }
             if(!found){sumTotal.add(newline);}
         }
-        var sumTotalArr = new ArrayList<Tup<Double, String, LocalDateTime>>();
-        sumTotalArr.addAll(sumTotal);
-        return sumTotalArr;
+        return KType.toKType(sumTotal);
     }
 
     /*
-     * Calculates assets on a time series
+     * Calculates assets total daily while iterating a time series .  
      * 
-     * @param startAssets the dollar amount of sales starting with
-     * @param dailySales an ArrayList of sales 
-     * @return array of <assetsTotal, epoch>
+     * @param startAssets the dollar amount of assets at beginning of date range
+     * @param dailySales a KType of daily sales
+     * @return KType of sets representing daily (assets, x, epoch)
      */
-    public ArrayList<double[]> calcAssetsFromStart(double startAssets, ArrayList<Tup<Double, String, LocalDateTime>> dailySales){
+    public KType calcAssetsFromStart(double startAssets, KType dailySales){
 
-        Comparator<Tup<Double, String, LocalDateTime>> epochSort = 
-                (Tup<Double, String, LocalDateTime>a, Tup<Double, String, LocalDateTime>b) 
-                    -> Long.compare(a.z.toEpochSecond(ZoneOffset.UTC),b.z.toEpochSecond(ZoneOffset.UTC));
+        Comparator<String[]> epochSort = (String[]a, String[]b) 
+            -> Long.compare(Long.parseLong(a[2]), Long.parseLong(b[2]));
 
-        dailySales.sort(epochSort);
+        dailySales.data.sort(epochSort);
 
-        ArrayList<double[]> assets = new ArrayList<>(); //double assets state in dollars, double epoch
+        KType assets = new KType();
         double start = startAssets;
 
-        for(var tuple : dailySales){
-            start = start - tuple.x;
-            double[] salesEpoch = new double[]{
-                start, tuple.z.toEpochSecond(ZoneOffset.UTC)
-            };
-            assets.add(salesEpoch);
+        for(var tuple : dailySales.data){
+            start = start - Double.parseDouble(tuple[0]);
+            assets.add(Double.toString(start), tuple[1], tuple[2]);
         }
         return assets;
     }
 
     /*
-     * Calculates total spent by each user email
-     * 
-     * @param ordersTable a sql query resultSet of all orders
-     * @return array of tuples <totalspent, email>
-     */
-    public ArrayList<Tup<Double, String, LocalDateTime>> getUsersSpent(ResultSet ordersTable) throws NumberFormatException, SQLException {
-
-        CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>> sumTotal = new CopyOnWriteArrayList<Tup<Double,String, LocalDateTime>>();
-        while(ordersTable.next()){
-            
-            String email = ordersTable.getString(1);
-            Integer quant = Integer.parseInt(ordersTable.getString(2));
-            Double price = Double.parseDouble(ordersTable.getString(3));
-            assert(ordersTable.getString(4).length() < 11);
-            LocalDateTime time = LocalDateTime.parse(ordersTable.getString(4) + "T00:00:00.000000000");
-            Double total = quant * price;
-
-            var newline = new Tup<Double, String, LocalDateTime>(total,email,time);
-            boolean found = false;
-
-            for(int i = 0; i < sumTotal.size();i++) 
-            {
-                if(email.equals(sumTotal.get(i).y)){
-                    Double newAddition =  total + sumTotal.get(i).x;
-                    sumTotal.remove(i);
-                    var reinsert = new Tup<Double, String, LocalDateTime>(newAddition, email, time);
-                    sumTotal.add(i, reinsert);
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){sumTotal.add(newline);}
-        }
-        var sumTotalArr = new ArrayList<Tup<Double, String, LocalDateTime>>();
-        sumTotalArr.addAll(sumTotal);
-        return sumTotalArr;
-    }
-
-    /*
-     * Sorts array of tuples by first Double field
-     * Only x initial items are guaranteed to be sorted
-     * 
-     * @param unsorted the array of tuples
-     * @param x the number of sorted items to return
-     * @return sorted array of tuples <totalspent, email>
-     */
-    public ArrayList<Tup<Double,String,LocalDateTime>> getSortedTuples(ArrayList<Tup<Double,String,LocalDateTime>> unsorted, int x) {
-
-        ArrayList<Tup<Double,String,LocalDateTime>> sorted = new ArrayList<Tup<Double,String,LocalDateTime>>();
-
-        for(Tup<Double,String,LocalDateTime> tuple: unsorted){
-
-            int totalItems = sorted.size();
-            if(totalItems == 0){
-                sorted.add(0, tuple);
-                continue;
-            }
-            else if(totalItems > x) 
-                totalItems = x;
-
-            boolean found = false;
-            for(int i = 0; i < totalItems; i++){
-                if(tuple.x > sorted.get(i).x){
-                    sorted.add(i, tuple);
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){sorted.add(tuple);}
-        }
-        return sorted;
-    }
-
-    /*
-     * Calculates total assets of product inventory
+     * Calculates total assets of product inventory.
      * 
      * @return sumAssets sum of current inventory wholesalecost
      */
-    public double getSumAssets() throws SQLSyntaxErrorException, SQLException {
+    public double getSumAssets(){
 
         ResultSet assetArray = getProducts();
         double sumAssets = 0;
 
-        ResultSetMetaData metadata = assetArray.getMetaData();
-        int columnCount = metadata.getColumnCount();
-
-        while (assetArray.next()) {
-            for (int i = 1; i < columnCount; i++) {
-                double currentQuantity = Double.parseDouble(assetArray.getString(i));
-                double currentCost = Double.parseDouble(assetArray.getString(i + 1));
-                double currentAsset = currentQuantity * currentCost;
-                sumAssets += currentAsset;
+        try{        
+            ResultSetMetaData metadata = assetArray.getMetaData();
+            int columnCount = metadata.getColumnCount();
+    
+            while (assetArray.next()) {
+                for (int i = 1; i < columnCount; i++) {
+                    double currentQuantity = Double.parseDouble(assetArray.getString(i));
+                    double currentCost = Double.parseDouble(assetArray.getString(i + 1));
+                    double currentAsset = currentQuantity * currentCost;
+                    sumAssets += currentAsset;
+                }
             }
+
+        }catch(SQLException e){
+            sumAssets = 0;
+            e.printStackTrace();
         }
         return sumAssets;
     }
 
     /*
-     * Get all items quantity & wholesalecost
+     * Gets all select product details from the db.
      * 
      * @param db the database handle
      * @return ResultSet of items in DB
      */
-    public ResultSet getProducts() throws SQLException, SQLSyntaxErrorException {
+    public ResultSet getProducts(){
         String tableName = "Products";
         return db.sendSqlStatement("SELECT quantity, wholesale_cost FROM " + tableName + ";");
     }
 
     /*
-     * Get all orders details
+     * Gets all orders fields from the db.
      * 
      * @param db the database handle
-     * @return ResultSet of orders in DB
+     * @return ResultSet the database response composed of email, product id, quantity
      */
-    public ResultSet getOrders() throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
+    public ResultSet getOrders(){
         String tableName = "Orders";
-        return db.sendSqlStatement("SELECT cust_email, product_id, product_quantity FROM " + tableName + ";");
+        return db.sendSqlStatement("SELECT cust_email, product_id, product_quantity "
+                                    + "FROM " + tableName + ";");
     }
 
     /*
-     * Get all asset fields
+     * Gets all asset fields from the db.
      * 
      * @param db the database handle
      * @return ResultSet the database response composed of date, quantity, wholesale_cost
      */
-    public ResultSet getAssets() throws SQLException, SQLSyntaxErrorException, FileNotFoundException {
+    public ResultSet getAssets(){
         String query = "SELECT orders.date, orders.product_quantity, products.wholesale_cost "
                      + "FROM orders JOIN products ON orders.product_id = products.product_id;";
         return db.sendSqlStatement(query);
     }
+    
+   /*
+    * Converts ResultSet to KType.
+    * 
+    * @param results the db response in 3 column format
+    * @return converted String date, String y, String epoch
+    */
+    public static KType convertResultSetKType(ResultSet results){
+    
+        KType converted = new KType();
+        try{
+            while(results.next()){
+                converted.add(results.getString(3), results.getString(2), 
+                              Long.toString(LocalDateTime.parse(results.getString(1) + DateFields.EOL).
+                                        toEpochSecond(ZoneOffset.UTC)));
+        }
+        }catch(SQLException e){
+            converted = null;
+            e.printStackTrace();
+        }
+        return converted;
+    }
 
+   /*
+    * Gets the sum of all assets sold up until the start of the dateRange.
+    * 
+    * @param assetsDays the KType set of assets by day
+    * @param dateRange 
+    * @return the sum of assets sold from the start of dateRange
+    */
+    public static double getAssetsStartRange(KType assetsDays, DateFields dateRange){
+
+        double assetsSold = 0;
+
+        final long startEpoch = dateRange.getStartTimeEpoch();
+
+        for(var set : assetsDays.data){
+            long orderEpoch = Long.parseLong(set[2]);
+            if(orderEpoch <= startEpoch){
+                assetsSold += (Double.parseDouble(set[0]) * Double.parseDouble(set[1]));
+            }
+        }
+        return assetsSold;
+    }
 
     /*
-     * Filters array of orders by a date range
+     * Filters KType of orders by a date range.
      * 
      * @param start the object from the start date text field
      * @param end the object from the end date text field
-     * @param rows the object returned from the SQL query to the db
-     * @return ArrayList of order columns
+     * @param rows the KType to filter 
+     * @return KType of filtered sets
      */
-    public static ArrayList<String[]> filterByDate(LocalDateTime start, LocalDateTime end, ResultSet rows, int dateColumn) throws SQLException {
+    public static KType filterByDate(DateFields dateRange, KType rows){
 
-        final long startEpoch = start.toEpochSecond(ZoneOffset.UTC);
-        final long endEpoch = end.toEpochSecond(ZoneOffset.UTC);
-        long orderEpoch;
-        
-        int numColumns = rows.getMetaData().getColumnCount();
-        var filtered = new ArrayList<String[]>();
+        final long startEpoch = dateRange.getStartTimeEpoch();
+        final long endEpoch = dateRange.getEndTimeEpoch();
 
-        while(rows.next()){
-            
-            assert(rows.getString(dateColumn).length() < 11);
-            LocalDateTime time = LocalDateTime.parse(rows.getString(dateColumn) + "T00:00:00.000000000");
-            orderEpoch = time.toEpochSecond(ZoneOffset.UTC);
+        var filtered = new KType();
 
-            if(orderEpoch < startEpoch || orderEpoch > endEpoch) continue;
-
-            var line = new String[numColumns];
-
-            for(int i = 0; i < numColumns; i++){
-                line[i] = rows.getString(i + 1);
+        for(var set : rows.data){
+            long epoch = Long.parseLong(set[2]);
+            if(epoch < startEpoch || epoch > endEpoch){
+                continue;
             }
-            filtered.add(line);
+            filtered.add(set[0], set[1], set[2]);
         }
         return filtered;
     }
