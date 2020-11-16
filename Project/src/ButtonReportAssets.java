@@ -1,8 +1,5 @@
 import java.awt.Font;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -10,61 +7,63 @@ public class ButtonReportAssets extends ButtonReport {
 
     private final Algorithms algorithm;
 
-    public ButtonReportAssets(JPanel outputArea, Algorithms algorithm, String name, 
-                                DateFields dateRange) {
-        super(outputArea, name);    
+    public ButtonReportAssets(JPanel outputArea, JPanel graphArea, Algorithms algorithm, String name, DateFields dateRange) {
+        super(outputArea, graphArea, name);
         this.algorithm = algorithm;
         this.dateRange = dateRange;
     }
 
-    /*
-     * Sorts users by total spent within date range
+    /* 
+     * Calculates sum of assets and sorts for the given dateRange.
      */
     @Override
-    protected void calculateResult(){
+    protected void calculateResult()  {
 
-        Db db = Db.getInstance();
-        String joinAssetQuery = "SELECT orders.cust_email,orders.product_quantity,"
-                              + "products.wholesale_cost, orders.date FROM orders "
-                              + "JOIN products ON orders.product_id = products.product_id;";
-        ResultSet allOrders = db.sendSqlStatement(joinAssetQuery);
+        double sumAssets = algorithm.getSumAssets();
 
-        ArrayList<String[]> filteredOrders = null;
-
-        try{
-            filteredOrders = Algorithms.filterByDate(dateRange.getStartTime(), 
-                                                    dateRange.getEndTime(), 
-                                                    allOrders);
-        } catch(SQLException e){
-            e.printStackTrace();
+        ResultSet dbResults = null;
+        if (sumAssets != 0) {
+            dbResults = algorithm.getAssets();
         }
 
-        if(filteredOrders != null & filteredOrders.size() > 0){
-            ArrayList<Tup<Double,String, LocalDateTime>> results = algorithm.getUsersSpent(filteredOrders);
-            int size = results.size() < MAX_RESULTS ? results.size() : MAX_RESULTS;
-            result = algorithm.getSortedTuples(results, size);
+        KType convertedResults = null;
+        if (dbResults != null) {
+            convertedResults = Algorithms.convertResultSetKType(dbResults);
+        }
+
+        if (convertedResults != null) {
+            sumAssets += Algorithms.getAssetsStartRange(convertedResults, dateRange);
+
+            KType filteredByDate = Algorithms.filterByDate(dateRange, convertedResults);
+            KType dailyAssetsSold = algorithm.getDailyAssetsSold(filteredByDate);
+            KType dailyAssetsSoldFromStart = algorithm.calcAssetsFromStart(sumAssets, dailyAssetsSold);
+
+            result = KType.sortKTypeBy(0,10,dailyAssetsSoldFromStart);
         }
     }
 
     /*
-     * Displays results in this JPanel outputArea
+     * Displays formatted results up to MAX_RESULTS results. 
      */
     @Override
     protected void displayResult() {
+
         outputArea.removeAll();
 
-        if(result == null || result.size() < 1){
+        if (result == null || result.getSize() < 1) {
             outputArea.add(new JLabel("NO RESULTS"));
         }
-        else{    
-            int size = result.size() < MAX_RESULTS ? result.size() : MAX_RESULTS;
+        else {    
+            int size = result.getSize() < MAX_RESULTS ? result.getSize() : MAX_RESULTS;
+            Font lineFont = new Font("Helvetica", Font.PLAIN, 13);
 
-            for(var item : result.subList(0, size)){
+            for(var item : result.data.subList(0, size)){
                 JLabel line = new JLabel();
-                line.setFont(new Font("Helvetica", Font.PLAIN, 13));
-                line.setText(item.y + "\s\s$" + String.format("%.2f", item.x));
+                line.setFont(lineFont);
+                line.setText(item[0] + "\s\s$" + item[2]);
                 outputArea.add(line);
             }
+            displayGraph("Total Assets");
         }
         outputArea.revalidate();   
     }
