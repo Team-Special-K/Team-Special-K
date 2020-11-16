@@ -11,6 +11,7 @@ public abstract class ButtonReport {
     protected DateFields dateRange;
     protected KType result;
     public final int MAX_RESULTS = 10;
+    private Font textResultFont = new Font("Helvetica", Font.PLAIN, 13);
 
     /*
      * Constructor
@@ -89,6 +90,32 @@ public abstract class ButtonReport {
         graphArea.add(new JLabel(graphFile));
     }
 
+    /*
+     * Formats text results to maximum display count and style. 
+     */
+    protected JLabel[] formatTextResults(){
+
+        JLabel[] lines = null;
+
+        if (result == null || result.getSize() < 1) {
+            lines = new JLabel[]{new JLabel("NO RESULTS")};
+        }
+        else {    
+            int size = result.getSize() < MAX_RESULTS ? result.getSize() : MAX_RESULTS;
+            lines = new JLabel[size];
+            int i = 0;
+            for(var item : result.data.subList(0, size)){
+                JLabel line = new JLabel();
+                line.setFont(textResultFont);
+                line.setText(formatTextResultLine(item[0], item[2]));
+                lines[i++] = line;
+            }
+        }
+        return lines;
+    }
+
+    protected abstract String formatTextResultLine(String x, String y);
+    
     protected abstract void calculateResult();
 
     protected abstract void displayResult();
