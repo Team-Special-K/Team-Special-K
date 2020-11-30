@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.*;
+import java.awt.*;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -21,38 +22,39 @@ public class EventSimulator {
     static Db db = Db.getInstance();
     static String tableName = "products";
 
-    public static void main(String[] args) throws SQLException {
-
-        // Call the thing here to see if it works
-        JFrame frame = new JFrame("Demo"); 
-
-        frame.add(getPanel());
-        frame.setBounds(400, 400, 450, 450);
-        frame.setVisible(true);
-        frame.repaint();
-
-
-    }
-
-    public static JPanel getPanel() throws SQLException {
+    public static JPanel getPanel() {
 
         db.sendSqlStatement("USE firstdb;");
         // create jpanel
 
-        JPanel demoTest = new JPanel();
+        JPanel demoTest = new JPanel(new GridLayout(10, 1, 3, 0));
         JTextField productIDField = new JTextField(20);
         JTextField quantityField = new JTextField(20);
         JButton updateBuyerButton = new JButton("Buyer");
         JButton updateSupplierButton = new JButton("Supplier");
         JButton getNewQuantityButton = new JButton("Update");
         JTextArea currentOutput = new JTextArea(10, 20);
+        JPanel buttonLine = new JPanel();
+        JPanel finalPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+        JPanel empty = new JPanel();
+        JLabel productLabel = new JLabel("Input Product ID");
+        JLabel quantityLabel = new JLabel("Input Quantity");
+        JLabel currentLabel = new JLabel("Current Quantity");
+
+        empty.setPreferredSize(new Dimension(500,600));
+        currentOutput.setEditable(false);
+
+        demoTest.setBorder(BorderFactory.createEmptyBorder(0,6,0,6));
+
+        buttonLine.setLayout(new GridLayout(1, 2, 3, 0));
 
 
-        demoTest.setLayout(new BoxLayout(demoTest, BoxLayout.Y_AXIS));
+        //demoTest.setLayout(new BoxLayout(demoTest, BoxLayout.Y_AXIS));
 
-        formatButton(updateBuyerButton);
-        formatButton(updateSupplierButton);
-        formatButton(getNewQuantityButton);
+
+        ButtonReport.applyStyle(updateBuyerButton);
+        ButtonReport.applyStyle(updateSupplierButton);
+        ButtonReport.applyStyle(getNewQuantityButton);
 
         // make button that calls get quantity
 
@@ -98,28 +100,22 @@ public class EventSimulator {
             }
 
         });
-
+        demoTest.add(productLabel);
         demoTest.add(productIDField);
         demoTest.add(getNewQuantityButton);
+        demoTest.add(quantityLabel);
         demoTest.add(quantityField);
-        demoTest.add(updateBuyerButton);
-        demoTest.add(updateSupplierButton);
+        buttonLine.add(updateBuyerButton);
+        buttonLine.add(updateSupplierButton);
+        demoTest.add(buttonLine);
+        demoTest.add(currentLabel);
         demoTest.add(currentOutput);
+        finalPanel.add(demoTest);
+        finalPanel.add(empty);
 
-        return demoTest;
+        return finalPanel;
 
     }
-
-    public static void formatButton(JButton button) {
-        button.setFont(new Font("Helvetica", Font.PLAIN, 17));
-        button.setPreferredSize(new Dimension(100, 50));
-        button.setBackground(new Color(0, 120, 215));
-        button.setForeground(new Color(220, 239, 252));
-        button.setBorder(BorderFactory.createLineBorder(new Color(3, 140, 247), 0, true));
-        button.setFocusable(false);
-    }
-
-
 
     // method that submits the string for a buyer event
     public static void buyerEvent(String productID, String amount) {

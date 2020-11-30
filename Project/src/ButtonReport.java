@@ -30,7 +30,7 @@ public abstract class ButtonReport {
         this.outputArea = outputArea;
         this.graphArea = graphArea;
     
-        applyStyle();
+        applyStyle(button);
 
         button.addActionListener(new ActionListener() {
             
@@ -66,7 +66,7 @@ public abstract class ButtonReport {
     /*
      * Applies specific style to this button.
      */
-    private void applyStyle(){
+    protected static void applyStyle(JButton button){
         button.setFont(new Font("Helvetica", Font.PLAIN, 17));
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(new Color(220, 239, 252));

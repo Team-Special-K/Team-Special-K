@@ -1,12 +1,13 @@
 import java.awt.*;
-import javax.swing.*;
+import java.sql.SQLException;
 
+import javax.swing.*;
 
 public class Gui {
 
     public static final Color BG_COLOR = new Color(64, 64, 64);
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws SQLException {
         initDb();
         Gui gui = new Gui();
         gui.buildFrame();
@@ -32,8 +33,8 @@ public class Gui {
             db.sendSqlStatement(order.createTable());
         }
     }
- 
-    private void buildFrame() {
+
+    private void buildFrame() throws SQLException {
 
         JFrame frame = new JFrame();
         frame.setSize(800, 600);
@@ -100,7 +101,8 @@ public class Gui {
         menu = addButtons(menu, sampleGraph, textResults, dateRange);
 
         tabs.addTab("Reports", firstTab);
-        tabs.addTab("Inventory", new JPanel());
+        tabs.addTab("Inventory", InventoryTab.getPanel());
+        tabs.addTab("Event Simulator", EventSimulator.getPanel());
 
         frame.add(tabs);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -136,5 +138,10 @@ public class Gui {
 
         return menu;
     }
+
+    
+
+
+
 }
 
