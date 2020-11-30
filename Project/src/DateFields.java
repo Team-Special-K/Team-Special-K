@@ -1,8 +1,11 @@
-import javax.swing.JTextField;
+import java.awt.Font;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.BorderFactory;
+import javax.swing.JTextField;
+
 
 public class DateFields {
 
@@ -10,6 +13,7 @@ public class DateFields {
     private JTextField dateEnd;
     private JTextField lastDateStart;
     private JTextField lastDateEnd;
+    private String lastDateObjectDisplayed;
 
     public static final int DATE_CHAR_LEN = 10;
     static final String EOL = "T00:00:00.000000000";
@@ -20,10 +24,20 @@ public class DateFields {
      */
     public DateFields(){
         String dateNow = LocalDateTime.now().toString().substring(0, 10);
-        dateStart = new JTextField(dateNow);
-        dateEnd = new JTextField(dateNow);
+
         lastDateStart = null;
         lastDateEnd = null;
+        lastDateObjectDisplayed = null;
+        dateStart = new JTextField(dateNow);
+        dateEnd = new JTextField(dateNow);
+        
+        JTextField[] fields = new JTextField[]{dateStart, dateEnd};
+
+        for(var field : fields){
+            field.setFont(new Font("Helvetica", Font.PLAIN, 16));
+            field.setHorizontalAlignment(JTextField.CENTER);
+            field.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        }
     }
 
     /*
@@ -40,7 +54,6 @@ public class DateFields {
             dateEndText.length() < DATE_CHAR_LEN){
             return false;
         }
-
         Pattern dateFormat = Pattern.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d");
         Matcher dateStartMatch = dateFormat.matcher(dateStartText);
         Matcher dateEndMatch = dateFormat.matcher(dateEndText);
@@ -57,11 +70,23 @@ public class DateFields {
      * @return boolean true fields have changed
      */
     protected boolean checkFieldsChange(){
-        if(!dateStart.getText().equals(lastDateStart.getText()) 
+        if(lastDateStart == null || lastDateEnd == null 
+        || !dateStart.getText().equals(lastDateStart.getText()) 
         || !dateEnd.getText().equals(lastDateEnd.getText())){
             return true;
         }
         return false;
+    }
+
+    protected boolean checkGraphObjectChange(String graphObjectName){
+        if(lastDateObjectDisplayed == null || lastDateObjectDisplayed != graphObjectName){
+            return true;
+        }
+        return false;
+    }
+
+    protected void setLastGraphObject(String name){
+        lastDateObjectDisplayed = name;
     }
 
     /*

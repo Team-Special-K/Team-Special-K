@@ -17,7 +17,7 @@ public class OrderQuery extends QueryBuilder{
 		keys.put("product_id", productId);
         keys.put("product_quantity", quantity);
         keys.put("confirmation", confirmation);
-}
+    }
 
     public void loadKeys(){
         keys.put("date", "");
@@ -27,6 +27,4 @@ public class OrderQuery extends QueryBuilder{
         keys.put("product_quantity", 0);
         keys.put("confirmation", false);	
     }
-
-
 }

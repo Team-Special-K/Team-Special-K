@@ -9,9 +9,10 @@ import java.util.Scanner;
 
 public final class Db{
 	
-	static Connection connect = null;
-    final static String dbAddress = "jdbc:mysql://localhost:3306?user=root";
+	private static Connection connect = null;
+    private final static String dbAddress = "jdbc:mysql://localhost:3306?user=root";
     private static final Db instance = new Db();
+    private final String dbName = "Firstdb";
  
     private Db(){
         getConnection();
@@ -21,7 +22,9 @@ public final class Db{
      * Returns the reference to the sole instance of the db
      */
     public static Db getInstance(){
-        if(connect == null) getConnection();
+        if(connect == null){
+            instance.getConnection();
+        }
         return instance;
     }
 
@@ -30,10 +33,11 @@ public final class Db{
      * 
      * @return true if a successful connection was made
      */
-    private static boolean getConnection(){
+    private boolean getConnection(){
     	
         try {
-        	connect = DriverManager.getConnection(dbAddress);        
+            connect = DriverManager.getConnection(dbAddress);
+            sendSqlStatement("USE " + dbName + ";");        
         } 
         catch (SQLException e) {
         	e.printStackTrace();
@@ -57,8 +61,13 @@ public final class Db{
     		Statement state = connect.createStatement();
     		boolean sqlSuccess = state.execute(sqlCommands);
     		if(sqlSuccess) {results = state.getResultSet();}    		
-    	}
-    	catch(Exception e){}
+        } catch(SQLSyntaxErrorException e){
+            e.printStackTrace();
+        } catch(SQLException e){
+            e.printStackTrace();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     	return results;
     } 
       
