@@ -3,6 +3,7 @@ import java.awt.Font;
 import java.awt.event.*;
 import javax.swing.*;
 
+
 public abstract class ButtonReport {
 
     final protected JButton button;
@@ -11,7 +12,8 @@ public abstract class ButtonReport {
     protected DateFields dateRange;
     protected KType result;
     public final int MAX_RESULTS = 10;
-    private Font textResultFont = new Font("Helvetica", Font.PLAIN, 13);
+    protected static Font textResultFont = new Font("Gotham", Font.BOLD, 13);
+    protected Boolean isBarGraph = false;
 
     /*
      * Constructor
@@ -91,32 +93,69 @@ public abstract class ButtonReport {
     }
 
     /*
+     * Creates a bar graph image file and displays image to this graphArea.
+     * 
+     * @param yAxisName the string to display on the graphs y-axis.
+     */
+    protected void displayBarGraph(String yAxisName){
+
+        var graphArray = result.toBarGraphArray(2, 0); //ArrayList<String[]>
+
+        Graph graph = new Graph("");
+        graph.addBarGraphPoints(graphArray);
+        graph.createBarGraph(yAxisName);
+
+        graph.exportImg();
+        ImageIcon graphFile = new ImageIcon(Graph.fileName);
+        graphFile.getImage().flush();
+        graphArea.add(new JLabel(graphFile));
+    }
+
+    /*
      * Formats text results to maximum display count and style. 
      */
-    protected JLabel[] formatTextResults(){
+    protected JPanel[] formatTextResults(){
 
-        JLabel[] lines = null;
+        JPanel[] lines = null;
 
         if (result == null || result.getSize() < 1) {
-            lines = new JLabel[]{new JLabel("NO RESULTS")};
+            var empty = new JPanel();
+            empty.add(new JLabel("No Results"));
+            lines = new JPanel[]{empty};
         }
         else {    
             int size = result.getSize() < MAX_RESULTS ? result.getSize() : MAX_RESULTS;
-            lines = new JLabel[size];
+            lines = new JPanel[size];
             int i = 0;
             for(var item : result.data.subList(0, size)){
-                JLabel line = new JLabel();
-                line.setFont(textResultFont);
-                line.setText(formatTextResultLine(item[0], item[2]));
-                lines[i++] = line;
+                JPanel formattedLine= formatLineToPanel(item[0], item[2]);
+                lines[i++] = formattedLine;
             }
         }
         return lines;
     }
 
-    protected abstract String formatTextResultLine(String x, String y);
-    
+    /*
+     * Displays text results and graph in their respective areas
+     */
+    protected void displayResult() {
+        outputArea.removeAll();
+        var textResults = formatTextResults();
+        for(var line : textResults){
+            outputArea.add(line);
+        }
+        if (result.getSize() > 1){
+            if (isBarGraph){
+                displayBarGraph(button.getText());
+            }else{
+                displayGraph(button.getText());
+            }
+        }
+        outputArea.revalidate();  
+    }
+
     protected abstract void calculateResult();
 
-    protected abstract void displayResult();
+    protected abstract JPanel formatLineToPanel(String x, String y);
+
 }

@@ -4,12 +4,128 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Algorithms {
 
     private final Db db = Db.getInstance();
 
+    /*
+     * Gets product quantity sold over dateRange.
+     * 
+     * @param results a KType object.
+     * @return KTYPE of sets quantitySold, soldPrice, productId
+     */
+    public KType getMostOrderedProducts(KType results){
+
+        var productSold = new HashMap<String, Double>();
+
+        for(var result : results.data){
+            String productID = result[1];
+            Double existingSold = 0.0;
+            Double totalSold = Double.parseDouble(result[0]);
+
+            if(productSold.containsKey(productID)){
+                existingSold += productSold.get(productID);
+            }
+            productSold.put(productID, existingSold + totalSold);
+        }
+        return KType.toKType(productSold);
+    }
+
+    /*
+     * Gets daily number of orders per day.
+     * 
+     * @param results a KType object.
+     * @return KTYPE of sets quantity, soldPrice, epoch
+     */
+    public KType getProductNumOrders(KType results){
+
+        var numOrders = new HashMap<String, Double>();
+
+        for(var result : results.data){
+            String epoch = result[2];
+            Double existingQuantity = 0.0;
+                
+            Double total = Double.parseDouble(result[0]);
+
+            if(numOrders.containsKey(epoch)){
+                existingQuantity += numOrders.get(epoch);
+            }
+            numOrders.put(epoch, existingQuantity + total);
+        }
+        return KType.toKType(numOrders);
+    }
+
+    /*
+     * Gets daily number of orders per day.
+     * 
+     * @param results a KType object.
+     * @return KTYPE of sets quantity, soldPrice, epoch
+     */
+    public KType getDailySales(KType results){
+
+        var dailySales = new HashMap<String, Double>();
+
+        for(var result : results.data){
+            String epoch = result[2];
+            Double existingTotal = 0.0;
+
+            Double total = Double.parseDouble(result[0]) * Double.parseDouble(result[1]);
+
+            if(dailySales.containsKey(epoch)){
+                existingTotal += dailySales.get(epoch);
+            }
+            dailySales.put(epoch, existingTotal + total);
+        }
+        return KType.toKType(dailySales);
+    }
+
+    /*
+     * Gets daily number of orders per day.
+     * 
+     * @param results a KType object.
+     * @return KTYPE of sets quantity, soldPrice, epoch
+     */
+    public KType getCustomerSpent(KType results){
+
+        var customerSpent = new HashMap<String, Double>();
+
+        for(var result : results.data){
+            String email = result[1];
+            Double total = Double.parseDouble(result[0]);
+            Double existingTotal = 0.0;
+
+            if(customerSpent.containsKey(email)){
+                existingTotal += customerSpent.get(email);
+            }
+            customerSpent.put(email, existingTotal + total);
+        }
+        return KType.toKType(customerSpent);
+    }
+
+    /*
+     * Gets daily number of sales per day.
+     * 
+     * @param results a KType object.
+     * @return KTYPE of sets numOrders, dateString, dateObj
+     */
+    public KType getDailyNumOrders(KType results){
+
+        var numOrders = new HashMap<String, Double>();
+
+        for(var result : results.data){
+            String epoch = result[2];
+            Double num = 0.0;
+            if(numOrders.containsKey(epoch)){
+                num = numOrders.get(epoch);
+            }
+            numOrders.put(epoch, num + 1);
+        }
+        return KType.toKType(numOrders);
+    }
+    
     /*
      * Gets unsorted list of assets sold daily.
      * 
@@ -45,6 +161,8 @@ public class Algorithms {
         }
         return KType.toKType(sumTotal);
     }
+
+
 
     /*
      * Calculates assets total daily while iterating a time series .  
@@ -103,24 +221,63 @@ public class Algorithms {
     /*
      * Gets all select product details from the db.
      * 
-     * @param db the database handle
      * @return ResultSet of items in DB
      */
     public ResultSet getProducts(){
-        String tableName = "Products";
-        return db.sendSqlStatement("SELECT quantity, wholesale_cost FROM " + tableName + ";");
+        return db.sendSqlStatement("SELECT quantity, wholesale_cost FROM Products;");
     }
 
     /*
      * Gets all orders fields from the db.
      * 
-     * @param db the database handle
      * @return ResultSet the database response composed of email, product id, quantity
      */
     public ResultSet getOrders(){
-        String tableName = "Orders";
-        return db.sendSqlStatement("SELECT cust_email, product_id, product_quantity "
-                                    + "FROM " + tableName + ";");
+        return db.sendSqlStatement("SELECT cust_email, product_id, product_quantity FROM Orders;");
+    }
+
+
+    /*
+     * Gets sales fields from the db.
+     * 
+     * @return ResultSet the database response composed of date, quantity, sales_price
+     */
+    public ResultSet queryDailySales(){
+        return db.sendSqlStatement("SELECT orders.date, orders.product_quantity, products.sale_price "
+        + "FROM orders JOIN products ON orders.product_id = products.product_id;");
+    }
+
+    /*
+     * Gets all num orders fields from the db.
+     * 
+     * @param db the database handle
+     * @return ResultSet the database response composed of date, product id, quantity
+     */
+    public ResultSet queryNumOrders(){
+        return db.sendSqlStatement("SELECT date, cust_email, product_quantity FROM Orders;");
+    }
+
+    /*
+     * Gets all num orders fields from the db.
+     * 
+     * @param db the database handle
+     * @return ResultSet the database response composed of date, product id, quantity
+     */
+    public ResultSet queryMostOrderedProducts(){
+        return db.sendSqlStatement("SELECT date, product_id, product_quantity FROM Orders;");
+    }
+
+    /*
+     * Gets all customer order fields.
+     * 
+     * @param db the database handle
+     * @return ResultSet the database response composed of date, sales_total, wholesale_cost
+     */
+    public ResultSet queryTopCustomers(){
+        String query = "SELECT orders.date, orders.cust_email, "
+                     + "orders.product_quantity, products.sale_price "
+                     + "FROM orders JOIN products ON orders.product_id = products.product_id;";
+        return db.sendSqlStatement(query);
     }
 
     /*
@@ -134,21 +291,31 @@ public class Algorithms {
                      + "FROM orders JOIN products ON orders.product_id = products.product_id;";
         return db.sendSqlStatement(query);
     }
-    
-   /*
+
+    /*
     * Converts ResultSet to KType.
     * 
     * @param results the db response in 3 column format
     * @return converted String date, String y, String epoch
+    * @return converted String orderTotal, String email, String epoch if isFourFields
     */
-    public static KType convertResultSetKType(ResultSet results){
+    public static KType convertResultSetKType(ResultSet results, Boolean isFourFields){
     
         KType converted = new KType();
         try{
             while(results.next()){
-                converted.add(results.getString(3), results.getString(2), 
-                              Long.toString(LocalDateTime.parse(results.getString(1) + DateFields.EOL).
-                                        toEpochSecond(ZoneOffset.UTC)));
+                String key = results.getString(1);  
+                key = Long.toString(LocalDateTime.parse(key + DateFields.EOL).
+                                                    toEpochSecond(ZoneOffset.UTC));
+
+                if(isFourFields != true){
+                    converted.add(results.getString(3), results.getString(2), key);
+                }else{      
+                    Double quantity = Double.parseDouble(results.getString(3));
+                    Double salesPrice = Double.parseDouble(results.getString(4));
+                    String total = Double.toString(quantity * salesPrice);
+                    converted.add(total, results.getString(2), key);
+                }
         }
         }catch(SQLException e){
             converted = null;
