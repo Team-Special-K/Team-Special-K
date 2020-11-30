@@ -1,18 +1,16 @@
 import java.awt.*;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
-public class ButtonReportSales extends ButtonReport {
+public class ButtonReportTopCustomers extends ButtonReport {
 
     private final Algorithms algorithm;
 
-    public ButtonReportSales(JPanel outputArea, JPanel graphArea, Algorithms algorithm, String name, DateFields dateRange) {
+    public ButtonReportTopCustomers(JPanel outputArea, JPanel graphArea, Algorithms algorithm, 
+                                    String name, DateFields dateRange) {
         super(outputArea, graphArea, name);
         this.algorithm = algorithm;
         this.dateRange = dateRange;
@@ -24,14 +22,15 @@ public class ButtonReportSales extends ButtonReport {
     @Override
     protected void calculateResult()  {
 
-        ResultSet dbResults = algorithm.queryDailySales();
+        ResultSet dbResults = algorithm.queryTopCustomers();
         KType convertedResults = null;
         if(dbResults != null){
-            convertedResults = Algorithms.convertResultSetKType(dbResults, false);
+            convertedResults = Algorithms.convertResultSetKType(dbResults, true);
         }
         KType filteredByDate = Algorithms.filterByDate(dateRange, convertedResults);
-        KType dailyDailySales = algorithm.getDailySales(filteredByDate);
-        result = KType.sortKTypeBy(0,10,dailyDailySales);
+        KType customerTotalSpent = algorithm.getCustomerSpent(filteredByDate);
+        result = KType.sortKTypeBy(0,10,customerTotalSpent);
+        isBarGraph = true;
     }
 
     /*
@@ -39,9 +38,6 @@ public class ButtonReportSales extends ButtonReport {
      */
     @Override
     protected JPanel formatLineToPanel(String x, String y) {
-        LocalDateTime epoch = Instant.ofEpochMilli(Long.parseLong(y) * 1000)
-                                    .atOffset(ZoneOffset.UTC).toLocalDateTime();
-        String date = epoch.toString().substring(0, MAX_RESULTS);
 
         JPanel line = new JPanel(new GridLayout(1, 2));
 
@@ -50,7 +46,7 @@ public class ButtonReportSales extends ButtonReport {
         firstResult.setForeground(Gui.BG_COLOR);
         line.add(firstResult);
 
-        JLabel secondResult = new JLabel(date, JLabel.CENTER);
+        JLabel secondResult = new JLabel(y, JLabel.CENTER);
         secondResult.setFont(textResultFont);
         line.add(secondResult);
 

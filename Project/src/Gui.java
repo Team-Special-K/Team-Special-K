@@ -129,6 +129,11 @@ public class Gui {
                                                             "Top Products", dateRange); 
         menu.add(buttonTopProducts.button);
 
+        Algorithms topCustomers = new Algorithms();
+        var buttonTopCustomers= new ButtonReportTopCustomers(outputArea, graphArea, topCustomers, 
+                                                            "Top Customers", dateRange); 
+        menu.add(buttonTopCustomers.button);
+
         return menu;
     }
 }

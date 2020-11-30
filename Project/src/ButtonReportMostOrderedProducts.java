@@ -26,7 +26,7 @@ public class ButtonReportMostOrderedProducts extends ButtonReport {
 
         KType convertedResults = null;
         if(dbResults != null){
-            convertedResults = Algorithms.convertResultSetKType(dbResults);
+            convertedResults = Algorithms.convertResultSetKType(dbResults, false);
         }
 
         KType filteredByDate = Algorithms.filterByDate(dateRange, convertedResults);

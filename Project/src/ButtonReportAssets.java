@@ -32,7 +32,7 @@ public class ButtonReportAssets extends ButtonReport {
 
         KType convertedResults = null;
         if (dbResults != null) {
-            convertedResults = Algorithms.convertResultSetKType(dbResults);
+            convertedResults = Algorithms.convertResultSetKType(dbResults, false);
         }
 
         if (convertedResults != null) {
