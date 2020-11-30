@@ -34,17 +34,17 @@ public class ProductQuery extends QueryBuilder{
 		keys.put("supplier_id", "");
 	}
 	
-	public String buyerEvent() {
+	public String buyerEvent(String amount) {
             
      		// statement that needs to be sent to database to update the quantity by 1 due to purchase
-      		return "UPDATE " + tableName + " SET quantity = quantity - 1 WHERE " + keyHeader + " = " + keyWanted + ";"; 
+      		return "UPDATE " + tableName + " SET quantity = quantity - "+ amount +" WHERE " + keyHeader + " = '" + keyWanted + "';"; 
       
    	}
 
-   	public String supplierEvent() {
+   	public String supplierEvent(String amount) {
             
       		// statement that needs to be sent to database to update the quantity by 1 due to purchase
-      		return "UPDATE " + tableName + " SET quantity = quantity + 1 WHERE " + keyHeader + " = " + keyWanted + ";"; 
+      		return "UPDATE " + tableName + " SET quantity = quantity + "+ amount +" WHERE " + keyHeader + " = '" + keyWanted + "';"; 
       
    	}	
 }
